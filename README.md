@@ -1,27 +1,9 @@
 # Zabbix Nginx Plus Monitoring
-This repo comes with the monitoring script, template and example user_params config.  Below are some random thoughts on how this all comes together.  Their are a lot of items in this config, feel free to remove the items you don't know.  Also because every env is very unique no triggers are defined.  You should define your own based off of your usage pattern.
+This repo comes with the monitoring script, template and example user_params config.  Below are some random thoughts on how this all comes together.  Their are a lot of items in this config, feel free to remove the items you don't need.  Also because every env is very unique few triggers are defined.  You should define your own triggers based off of your usage pattern.
 
-## LLD
-This template & script supports low level discovery via Nginx+ status url.  The nginx plus status page needs to be configured
+This was created because we couldn't find an Nginx+ monitoring template for Zabbix.  If you use this, please give feedback or better yet pull requests.
 
-In this example you can access the Nginx+ status page at 
-
-* http://localhost:8080/status.html for the HTML5 page
-* http://localhost:8080/status for the JSON page
-
-```
-server {
-    listen 8080;
-    root /usr/share/nginx/html;
-
-    location = /status {
-        status;
-    }
-}
-```
-
-
-### Monitoring Script
+## Monitoring Script
 **nginxPlusInfo.py** is the script that will connect to your nginx status pages json interface and fetch all the metrics.  It also has the ability to do Zabbix low level discovery to populate metrics for zones and caches. In the future we may add upstreams for load balancers.
 
 
@@ -40,6 +22,27 @@ optional arguments:
   --lld-zones   Use Zabbix low level discovery to find all zones
   --debug       Dumps all the data in dot notation from the status url
 ```
+
+### LLD
+This template & script supports low level discovery via Nginx+ status url.  The nginx plus status page needs to be configured
+
+In this example you can access the Nginx+ status page at 
+
+* http://localhost:8080/status.html for the HTML5 page
+* http://localhost:8080/status for the JSON page
+
+```
+$> cat /etc/nabbix/conf.d/status.conf
+server {
+    listen 8080;
+    root /usr/share/nginx/html;
+
+    location = /status {
+        status;
+    }
+}
+```
+
 
 #### Example LLD Usage
 
@@ -74,4 +77,5 @@ The discovery runs local on the nginx server.  In order to be used it needs to b
 UserParameter=nginx.plus[*],/var/lib/zabbix/nginx/scripts/nginxPlusInfo.py $1
 ```
 
-Once you've created the file and paid special attention to set the path to the script where it lives on **YOUR** system be sure to recyle the zabbix_agent daemon.
+Once you've created the file and paid special attention to set the path to the script where it lives on **YOUR** system be sure to recyle the zabbix_agent daemon.  If your JSON status url runs somewhere other than http://localhost:8080/status then use the **--url** argument in your user paramter config to define your servers location
+
