@@ -76,6 +76,16 @@ The discovery runs local on the nginx server.  In order to be used it needs to b
 # Zabbix Scripts
 UserParameter=nginx.plus[*],/var/lib/zabbix/nginx/scripts/nginxPlusInfo.py $1
 ```
+#### Troubleshooting 
+Once you've created the file and paid special attention to set the path to where it lives on **YOUR** system be sure to recyle the zabbix_agent daemon. 
+  Example: ```service zabbix-agent restart```
 
-Once you've created the file and paid special attention to set the path to the script where it lives on **YOUR** system be sure to recyle the zabbix_agent daemon.  If your JSON status url runs somewhere other than http://localhost:8080/status then use the **--url** argument in your user paramter config to define your servers location
+
+
+If your JSON status url runs somewhere other than http://localhost:8080/status then use the **--url** argument in your user paramter config to define your servers location. Example:
+
+```
+# Zabbix Scripts
+UserParameter=nginx.plus[*],/var/lib/zabbix/nginx/scripts/nginxPlusInfo.py --url=http://localhost/stats $1
+```
 
